@@ -1,0 +1,9 @@
+{
+  "name": "ai-homework-helper",
+  "version": "1.0.0",
+  "description": "AI 숙제요정 꼼꼬미",
+  "main": "index.html",
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  }
+}
