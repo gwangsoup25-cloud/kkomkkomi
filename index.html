@@ -111,7 +111,11 @@
           body: JSON.stringify({ message: userText })
         });
         const data = await res.json();
-        document.querySelectorAll(".bot").slice(-1)[0].remove();
+        const botMessages = document.querySelectorAll(".bot");  
+if (botMessages.length > 0) {
+  botMessages[botMessages.length - 1].remove();  
+}
+
         addMessage(data.reply, "bot");
       } catch {
         addMessage("앗, 연결이 안 된 것 같아! 다시 시도해줘~", "bot");
