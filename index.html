@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI 숙제요정 꼼꼬미</title>
+  <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-image: url('background.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+    }
+    .chat-container {
+      width: 100%;
+      max-width: 600px;
+      height: 90vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px;
+      background-color: rgba(255, 255, 255, 0.85);
+      border-radius: 20px;
+      margin-bottom: 20px;
+    }
+    .chat-box {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 10px;
+    }
+    .chat-bubble {
+      background: #ffe6f0;
+      padding: 10px 14px;
+      margin: 8px 0;
+      border-radius: 20px;
+      max-width: 80%;
+      word-wrap: break-word;
+    }
+    .user { align-self: flex-end; background: #d0f0ff; }
+    .bot { align-self: flex-start; background: #fff4d6; }
+    .input-area {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      border-radius: 20px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 20px;
+      background-color: #ffcc00;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    img.kkomkkomi {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      width: 120px;
+      animation: float 2.5s ease-in-out infinite;
+      z-index: 5;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-box" id="chat"></div>
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="꼼꼬미에게 질문해보세요!" />
+      <button onclick="sendMessage()">보내기</button>
+    </div>
+  </div>
+  <img src="kkomkkomi.png" class="kkomkkomi" alt="꼼꼬미 요정" />
+  <script>
+    const chatBox = document.getElementById("chat");
+    function addMessage(text, sender) {
+      const bubble = document.createElement("div");
+      bubble.className = "chat-bubble " + sender;
+      bubble.textContent = text;
+      chatBox.appendChild(bubble);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+    async function sendMessage() {
+      const input = document.getElementById("userInput");
+      const userText = input.value.trim();
+      if (!userText) return;
+      addMessage(userText, "user");
+      input.value = "";
+      addMessage("으응~ 잠깐만! 꼼꼬미가 생각 중이야~ 🧠✨", "bot");
+      try {
+        const res = await fetch("/.netlify/functions/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: userText })
+        });
+        const data = await res.json();
+        document.querySelectorAll(".bot").slice(-1)[0].remove();
+        addMessage(data.reply, "bot");
+      } catch {
+        addMessage("앗, 연결이 안 된 것 같아! 다시 시도해줘~", "bot");
+      }
+    }
+  </script>
+</body>
+</html>

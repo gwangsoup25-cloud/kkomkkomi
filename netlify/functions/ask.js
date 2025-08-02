@@ -1,0 +1,27 @@
+
+const fetch = require("node-fetch");
+
+exports.handler = async function(event, context) {
+  const { message } = JSON.parse(event.body || "{}");
+
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+    },
+    body: JSON.stringify({
+      model: "gpt-3.5-turbo",
+      messages: [
+        { role: "system", content: "넌 귀엽고 다정한 요정 '꼼꼬미'야. 말투는 항상 반말이고 친절하게 설명해줘." },
+        { role: "user", content: message }
+      ]
+    })
+  });
+
+  const data = await response.json();
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ reply: data.choices[0].message.content })
+  };
+};
